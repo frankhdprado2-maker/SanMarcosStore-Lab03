@@ -71,6 +71,3 @@ SanMarcosStore es una tienda universitaria móvil que muestra productos académi
 
 ![Perfil oscuro](screenshots/perfil_oscuro.png)
 
-## Estado del proyecto
-
-Proyecto terminado y listo para entrega.

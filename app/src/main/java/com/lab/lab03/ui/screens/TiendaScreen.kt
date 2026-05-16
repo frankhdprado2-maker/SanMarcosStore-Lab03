@@ -1,5 +1,6 @@
 package com.lab.lab03.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -20,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,20 +32,71 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.lab.lab03.model.productosDePrueba
 import com.lab.lab03.ui.components.ProductoItem
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+
+private val Context.dataStore by preferencesDataStore(name = "favoritos_store")
+private val FAVORITOS_KEY = stringSetPreferencesKey("favoritos_ids")
 
 @Composable
-fun TiendaScreen() {
-    var busqueda by remember { mutableStateOf("") }
-    var mostrarFormulario by remember { mutableStateOf(false) }
+fun TiendaScreen(
+    onProductoClick: (Int) -> Unit
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var busqueda by rememberSaveable { mutableStateOf("") }
+    var mostrarFormulario by rememberSaveable { mutableStateOf(false) }
+    var categoriaSeleccionada by rememberSaveable { mutableStateOf("Todos") }
+
+    val favoritos = remember { mutableStateListOf<Int>() }
+
+    val favoritosGuardados by remember(context) {
+        context.dataStore.data.map { preferences ->
+            preferences[FAVORITOS_KEY] ?: emptySet()
+        }
+    }.collectAsState(initial = emptySet())
+
+    LaunchedEffect(favoritosGuardados) {
+        favoritos.clear()
+        favoritos.addAll(
+            favoritosGuardados.mapNotNull { it.toIntOrNull() }
+        )
+    }
+
+    val categorias = remember {
+        listOf("Todos") + productosDePrueba.map { it.categoria }.distinct()
+    }
+
+    val productosFiltrados = productosDePrueba.filter { producto ->
+        val coincideBusqueda =
+            producto.nombre.contains(busqueda, ignoreCase = true) ||
+                    producto.categoria.contains(busqueda, ignoreCase = true)
+
+        val coincideCategoria =
+            categoriaSeleccionada == "Todos" ||
+                    producto.categoria == categoriaSeleccionada
+
+        coincideBusqueda && coincideCategoria
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -50,7 +104,7 @@ fun TiendaScreen() {
                 value = busqueda,
                 onValueChange = { busqueda = it },
                 label = { Text("Buscar producto") },
-                placeholder = { Text("Ej: Cafe, Chocolate...") },
+                placeholder = { Text("Ej: Libro, USB, Mochila...") },
                 leadingIcon = {
                     Icon(Icons.Filled.Search, contentDescription = null)
                 },
@@ -61,13 +115,21 @@ fun TiendaScreen() {
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            if (mostrarFormulario) {
-                FormularioRapido()
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categorias) { categoria ->
+                    FilterChip(
+                        selected = categoriaSeleccionada == categoria,
+                        onClick = { categoriaSeleccionada = categoria },
+                        label = { Text(categoria) }
+                    )
+                }
             }
 
-            val productosFiltrados = productosDePrueba.filter {
-                it.nombre.contains(busqueda, ignoreCase = true) ||
-                        it.categoria.contains(busqueda, ignoreCase = true)
+            if (mostrarFormulario) {
+                FormularioRapido()
             }
 
             if (productosFiltrados.isEmpty()) {
@@ -92,7 +154,27 @@ fun TiendaScreen() {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(productosFiltrados, key = { it.id }) { producto ->
-                        ProductoItem(producto = producto)
+                        ProductoItem(
+                            producto = producto,
+                            esFavorito = favoritos.contains(producto.id),
+                            onFavoriteClick = {
+                                if (favoritos.contains(producto.id)) {
+                                    favoritos.remove(producto.id)
+                                } else {
+                                    favoritos.add(producto.id)
+                                }
+
+                                scope.launch {
+                                    context.dataStore.edit { preferences ->
+                                        preferences[FAVORITOS_KEY] =
+                                            favoritos.map { it.toString() }.toSet()
+                                    }
+                                }
+                            },
+                            onProductoClick = {
+                                onProductoClick(producto.id)
+                            }
+                        )
                     }
                 }
             }
@@ -113,7 +195,7 @@ fun TiendaScreen() {
 
 @Composable
 private fun FormularioRapido() {
-    var nombreProducto by remember { mutableStateOf("") }
+    var nombreProducto by rememberSaveable { mutableStateOf("") }
     val esError = nombreProducto.length > 30
 
     Card(

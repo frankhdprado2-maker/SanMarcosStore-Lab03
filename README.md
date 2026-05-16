@@ -7,11 +7,11 @@ Aplicación Android desarrollada con Kotlin, Jetpack Compose y Material Design 3
 - Nombre: Frank Prado
 - Correo: frankhdprado@gmail.com
 - Laboratorio: Lab 03
-- Emulador usado: Pixel 7 API 34
+- Emulador: Pixel 7 API 34
 
-## Descripción
+## Descripción breve
 
-SanMarcosStore es una aplicación móvil tipo tienda universitaria. Permite visualizar productos relacionados con una universidad, buscar productos por nombre o categoría, abrir un formulario rápido y navegar hacia una pantalla de perfil personalizada.
+SanMarcosStore es una tienda universitaria móvil que muestra productos académicos, permite buscar y filtrar por categorías, marcar favoritos, ver detalle de productos, usar modo oscuro y navegar entre Tienda, Carrito y Perfil.
 
 ## Tecnologías utilizadas
 
@@ -19,48 +19,58 @@ SanMarcosStore es una aplicación móvil tipo tienda universitaria. Permite visu
 - Jetpack Compose
 - Material Design 3
 - Navigation Compose
+- DataStore Preferences
 - Android Studio
-- Emulador Pixel 7 API 34
 
-## Funcionalidades implementadas
+## Ejercicios completados
 
-- Pantalla Tienda con productos universitarios.
-- Buscador con filtrado en tiempo real.
-- Formulario rápido con botón flotante.
-- Uso de botones Material 3.
-- Pantalla Mi Perfil personalizada.
-- Navegación inferior entre Tienda y Mi Perfil.
-- Uso de Cards, ListItem, Switches, FloatingActionButton y NavigationBar.
+### Nivel 1: Personalización
 
-## Productos universitarios incluidos
+- Se cambió el color principal del tema a una paleta verde universitaria.
+- Se personalizó el perfil con los datos reales del estudiante.
 
-- Cuaderno universitario A4
-- Lapiceros pack x3
-- Folder institucional
-- Mochila universitaria
-- Polo de la universidad
-- Tomatodo universitario
-- Calculadora científica
-- USB 32GB
-- Libro de programación Kotlin
-- Libro de matemática básica
-- Carnet universitario holder
-- Agenda académica 2026
+### Nivel 2: Funcionalidad
+
+- Se agregó el tercer tab Carrito.
+- Se implementó favorito clickable en los productos.
+- Se agregaron filtros por categoría usando FilterChip.
+
+### Nivel 3: Avanzado
+
+- Se agregó pantalla de detalle al hacer click en un producto.
+- Se implementó modo oscuro real desde el perfil.
+- Se persistieron los favoritos usando DataStore.
 
 ## Capturas de pantalla
 
 ### Pantalla Tienda con productos visibles
 
-![Pantalla Tienda](screenshots/tienda_productos.png)
-
-### Pantalla Mi Perfil
-
-![Pantalla Perfil](screenshots/perfil.png)
+![Tienda productos](screenshots/tienda_productos.jpg)
 
 ### Pantalla Tienda con formulario abierto
 
-![Formulario abierto](screenshots/tienda_formulario.png)
+![Formulario abierto](screenshots/tienda_formulario.jpg)
+
+### Pantalla Mi Perfil completa
+
+![Perfil](screenshots/perfil.jpg)
+
+### Carrito
+
+![Carrito](screenshots/carrito.png)
+
+### Favoritos guardados
+
+![Favoritos](screenshots/favoritos_productos.png)
+
+### Modo oscuro en Tienda
+
+![Modo oscuro](screenshots/opcion_oscuro.png)
+
+### Perfil en modo oscuro
+
+![Perfil oscuro](screenshots/perfil_oscuro.png)
 
 ## Estado del proyecto
 
-Proyecto terminado para entrega del Lab 03.
+Proyecto terminado y listo para entrega.

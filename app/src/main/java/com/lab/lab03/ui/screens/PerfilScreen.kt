@@ -35,10 +35,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,10 +57,10 @@ private val opcionesPerfil = listOf(
 )
 
 @Composable
-fun PerfilScreen() {
-    var modoOscuro by remember { mutableStateOf(false) }
-    var notificaciones by remember { mutableStateOf(true) }
-
+fun PerfilScreen(
+    modoOscuro: Boolean,
+    onModoOscuroChange: (Boolean) -> Unit
+) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -183,11 +179,11 @@ fun PerfilScreen() {
                 Column {
                     ListItem(
                         headlineContent = { Text("Modo oscuro") },
-                        supportingContent = { Text("Cambia el aspecto de la app") },
+                        supportingContent = { Text("Cambia el tema completo de la app") },
                         trailingContent = {
                             Switch(
                                 checked = modoOscuro,
-                                onCheckedChange = { modoOscuro = it }
+                                onCheckedChange = onModoOscuroChange
                             )
                         }
                     )
@@ -199,8 +195,8 @@ fun PerfilScreen() {
                         supportingContent = { Text("Alertas de promociones universitarias") },
                         trailingContent = {
                             Switch(
-                                checked = notificaciones,
-                                onCheckedChange = { notificaciones = it }
+                                checked = true,
+                                onCheckedChange = { }
                             )
                         }
                     )

@@ -1,14 +1,17 @@
 package com.lab.lab03.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -20,9 +23,16 @@ import androidx.compose.ui.unit.dp
 import com.lab.lab03.model.Producto
 
 @Composable
-fun ProductoItem(producto: Producto) {
+fun ProductoItem(
+    producto: Producto,
+    esFavorito: Boolean,
+    onFavoriteClick: () -> Unit,
+    onProductoClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onProductoClick() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         ),
@@ -49,12 +59,16 @@ fun ProductoItem(producto: Producto) {
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    if (producto.favorito) {
+                    IconButton(onClick = onFavoriteClick) {
                         Icon(
-                            Icons.Filled.Favorite,
-                            contentDescription = "Producto favorito",
+                            imageVector = if (esFavorito) {
+                                Icons.Filled.Favorite
+                            } else {
+                                Icons.Filled.FavoriteBorder
+                            },
+                            contentDescription = "Cambiar favorito",
                             tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(22.dp)
                         )
                     }
                 }
